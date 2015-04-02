@@ -34,16 +34,19 @@ Gnipper.prototype.search = function (options, callback) {
   var that = this;
   var searchUrl = this.searchUrl(options);
 
-  request
-    .get(searchUrl, {
-      'auth': {
+  var options = {
+      url: searchUrl
+    , auth: {
         'user': that.username,
         'pass': that.password
       }
-    }, function(err, res, body) {
+    , timeout: options.timeout || 20000
+  };
+
+  request(options, function(err, res, body) {
       if (err) {
         // Include the error details returned by the Gnip API
-        var err = _.merge(err, res.error, res.body.error);
+        var err = _.merge(err, res && res.error, res && res.body && res.body.error);
         // Include Gnipper details with the error as well
         err.gnipper = {
           searchUrl: searchUrl,
